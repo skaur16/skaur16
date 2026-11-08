@@ -22,8 +22,8 @@ def typed(x, y, parts, size, begin, cps=28, glow=True, suffix=""):
     n = len(text)
     width = n * cw
     dur = n / cps
-    vals = ";".join(f"{2 + i * cw:.1f}" for i in range(n))
-    keys = ";".join(f"{i / n:.4f}" for i in range(n))
+    vals = ";".join(f"{2 + i * cw:.1f}" for i in range(n + 1))  # the last step shows the whole line
+    keys = ";".join(f"{i / (n + 1):.4f}" for i in range(n + 1))
     spans = "".join(f'<tspan fill="{c}">{t}</tspan>' for t, c in parts)
     g = f' filter="url(#glow)"' if glow else ""
     return (f'<clipPath id="{cid}"><rect x="{x - 2}" y="{y - size * 1.05:.1f}" height="{size * 1.6:.1f}" width="0">'
@@ -116,6 +116,7 @@ def header():
     at, y = 3.5, 144
     for i, (txt, col) in enumerate(lines):
         s, at, _ = typed(560, y, [("› ", USER), (txt, col)], 15, at, cps=30, glow=(i == 0), suffix=str(i))
+        body += s
         at += 0.1
         y += 28
     s, at2, xend = typed(40, 300, PROMPT, 17, at + 0.3, glow=True, suffix="p")
