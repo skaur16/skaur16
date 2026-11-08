@@ -2,6 +2,7 @@
 """The animated terminal banners for github.com/skaur16: header (whoami), the project board, and the footer.
 Pure SVG with SMIL animation, so GitHub renders it as is. Run: python3 tools/gen.py"""
 import os, random
+from html import escape
 
 OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets")
 random.seed(16)
@@ -24,7 +25,7 @@ def typed(x, y, parts, size, begin, cps=28, glow=True, suffix=""):
     dur = n / cps
     vals = ";".join(f"{2 + i * cw:.1f}" for i in range(n + 1))  # the last step shows the whole line
     keys = ";".join(f"{i / (n + 1):.4f}" for i in range(n + 1))
-    spans = "".join(f'<tspan fill="{c}">{t}</tspan>' for t, c in parts)
+    spans = "".join(f'<tspan fill="{c}">{escape(t)}</tspan>' for t, c in parts)
     g = f' filter="url(#glow)"' if glow else ""
     return (f'<clipPath id="{cid}"><rect x="{x - 2}" y="{y - size * 1.05:.1f}" height="{size * 1.6:.1f}" width="0">'
             f'<animate attributeName="width" begin="{begin:.2f}s" dur="{dur:.3f}s" fill="freeze" calcMode="discrete" values="{vals}" keyTimes="{keys}"/></rect></clipPath>'
@@ -137,7 +138,7 @@ def board():
         load += ";" + load.split(";")[0]
         label = f"{i + 1:04d}  "
         body += (f'<g opacity="0"><animate attributeName="opacity" values="0;1" dur=".25s" begin="{b:.2f}s" fill="freeze"/>'
-                 f'<text x="32" y="{y}" font-family="{MONO}" font-size="14" xml:space="preserve" textLength="571.2" lengthAdjust="spacing"><tspan fill="{MUTED}">{label}</tspan><tspan fill="{col}" font-weight="700">{name:<13}</tspan><tspan fill="{TEXT}">{what:<48}</tspan></text>'
+                 f'<text x="32" y="{y}" font-family="{MONO}" font-size="14" xml:space="preserve" textLength="571.2" lengthAdjust="spacing"><tspan fill="{MUTED}">{label}</tspan><tspan fill="{col}" font-weight="700">{name:<13}</tspan><tspan fill="{TEXT}">{escape(what):<48}</tspan></text>'
                  f'<rect x="603" y="{y - 11}" width="80" height="11" rx="2" fill="#1a1733"/><rect x="603" y="{y - 11}" width="40" height="11" rx="2" fill="{col}" opacity=".85"><animate attributeName="width" values="{load}" dur="{dur}s" repeatCount="indefinite"/></rect>'
                  f'<circle cx="708" cy="{y - 5}" r="4.5" fill="{col}" filter="url(#glow)"><animate attributeName="opacity" values="1;.25;1" dur="{1.4 + i * 0.25:.2f}s" repeatCount="indefinite"/></circle>'
                  f'<text x="719" y="{y}" font-family="{MONO}" font-size="14" fill="{col}">{state}</text></g>')
